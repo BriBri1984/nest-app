@@ -13,8 +13,10 @@ export class AppController {
   async root() {
     await this.appService.readAllTodos()
     const todos = this.appService.getMyTodos()
-    console.log({todos})
-    return { message: this.appService.getHello(), todos }
+    console.log(todos)
+    const myArr = ['one', 'two', 'five']
+
+    return { message: this.appService.getHello(), todos, myArr }
   }
 
   @Post("/create-todo")

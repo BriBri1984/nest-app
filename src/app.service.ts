@@ -6,7 +6,7 @@ export class AppService {
 
   private todoDir: string = "/tmp/todos"
 
-  private myTodos: Array<string> = []
+  private myTodos = []
 
   getHello(): string {
     return 'To Do List App';
@@ -21,8 +21,8 @@ export class AppService {
 
     const fileName = Date.now() + ".json"
     const fileContents = {
-      "todo-item" : item,
-      "date-time" : (new Date()).toISOString(),
+      "item" : item,
+      "date" : (new Date()).toISOString(),
       "status" : "incomplete",
     }
 
@@ -30,10 +30,12 @@ export class AppService {
     fs.writeFileSync(`${this.todoDir}/${fileName}`,jsonString)
   }
 
-
   async readAllTodos(){
-    return this.readFiles(this.todoDir + '/', (fileName,content)=>{
-        this.myTodos[fileName] = content
+    this.myTodos = []
+    return await this.readFiles(this.todoDir + '/', (fileName,content)=>{
+      const fileAsObject = JSON.parse(content)
+        fileAsObject["file"]= fileName
+        this.myTodos.push(fileAsObject)
     },(err)=>{
       console.error(err)
     })
@@ -43,7 +45,7 @@ export class AppService {
     return this.myTodos
   }
 
-  readFiles(dirname, onFileContent, onError) {
+  async readFiles(dirname, onFileContent, onError) {
     fs.readdir(dirname, function(err, filenames) {
       if (err) {
         onError(err);
